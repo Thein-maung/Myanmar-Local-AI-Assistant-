@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>မြန်မာစာ AI - Phi-3 Mini (GitHub Pages)</title>
-    <!-- WebLLM CDN with fallback -->
+    <title>မြန်မာစာ AI Assistant - Phi-3 Mini Local AI</title>
+    <!-- WebLLM for Local AI -->
     <script src="https://unpkg.com/@mlc-ai/web-llm@0.2.38"></script>
     <style>
-        /* Your existing Glass UI styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
         body { 
             font-family: 'Pyidaungsu', 'Myanmar3', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -18,7 +22,7 @@
             align-items: center;
             padding: 20px;
         }
-        
+
         .github-notice {
             position: fixed;
             top: 10px;
@@ -49,8 +53,128 @@
             margin-top: 60px;
         }
 
-        /* ... rest of your styles ... */
-        
+        .header {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-message .bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message .bubble {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 12px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #sendBtn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
         .model-loading {
             background: rgba(255, 255, 255, 0.9);
             padding: 15px;
@@ -74,111 +198,126 @@
             transition: width 0.3s ease;
             width: 0%;
         }
+
+        .typing {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing-bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .model-indicator {
+            font-size: 0.7em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <!-- GitHub Notice -->
     <div class="github-notice">
-        <strong>🚀 GitHub Pages - Phi-3 Mini Branch</strong>
+        <strong>🚀 Real Local AI - Phi-3 Mini</strong>
     </div>
 
     <!-- Chat Container -->
     <div class="chat-container">
         <div class="header">
-            <div class="current-mode" id="currentMode">🧠 Phi-3 Mini • 🇲🇲 မြန်မာ</div>
-            <h1>🤖 Phi-3 Mini Local AI</h1>
-            <p>GitHub Pages Version • Real Local AI</p>
+            <h1>🤖 မြန်မာစာ AI အကူ</h1>
+            <p>Phi-3 Mini Local AI • Real Model</p>
         </div>
         
         <div class="messages" id="messages">
             <div class="message bot-message">
                 <div class="bubble">
                     <strong>မင်္ဂလာပါ! 👋</strong><br>
-                    <span>Phi-3 Mini Local AI Model ကို GitHub Pages မှာ တင်ထားပါတယ်။</span>
+                    <span>Phi-3 Mini Local AI Model စတင်နေပါပြီ...</span>
                     
                     <div class="model-loading">
-                        <strong>🔄 Loading Phi-3 Mini (3.8B)...</strong>
+                        <strong>🔄 Phi-3 Mini (3.8B) ဖွင့်နေသည်...</strong>
                         <div class="progress-bar">
                             <div class="progress-fill" id="modelProgress"></div>
                         </div>
                         <div id="modelInfo" style="font-size: 0.8em; margin-top: 10px;">
-                            Initializing WebLLM engine...
+                            WebLLM engine စတင်နေသည်...
                         </div>
                     </div>
 
-                    <div style="margin-top: 15px;">
-                        <strong>GitHub Pages Info:</strong>
-                        <div style="font-size: 0.8em; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; margin-top: 8px;">
-                            • Branch: phi-3<br>
-                            • Model: Phi-3-mini-4k-instruct<br>
-                            • Size: ~2.3GB (auto-download)<br>
-                            • Status: <span id="loadStatus">Loading...</span>
-                        </div>
+                    <div class="quick-buttons">
+                        <button class="quick-btn" onclick="askQuestion('မင်္ဂလာပါ')">👋 မင်္ဂလာပါ</button>
+                        <button class="quick-btn" onclick="askQuestion('ရန်ကုန်ရာသီဥတု')">🌤️ ရာသီဥတု</button>
+                        <button class="quick-btn" onclick="askQuestion('မြန်မာ့သမိုင်းအကြောင်းပြောပါ')">📚 သမိုင်း</button>
+                        <button class="quick-btn" onclick="askQuestion('၁၅×၃ တွက်ပေးပါ')">🧮 တွက်ချက်</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="input-area">
-            <input type="text" id="userInput" placeholder="Model loading, please wait..." disabled autocomplete="off">
+            <input type="text" id="userInput" placeholder="Model ဖွင့်နေဆဲ..." disabled autocomplete="off">
             <button id="sendBtn" disabled>➤</button>
         </div>
     </div>
 
     <script>
-        // GitHub Pages Compatible Local AI
-        class GitHubAIAssistant {
+        // Real Local AI with Phi-3 Mini
+        class RealLocalAI {
             constructor() {
                 this.engine = null;
                 this.isInitialized = false;
-                this.modelLoaded = false;
+                this.modelName = "Phi-3-mini-4k-instruct-q4f16_1";
             }
 
-            // Initialize with error handling for GitHub Pages
             async init() {
                 try {
                     document.getElementById('modelInfo').textContent = 
-                        'Creating WebLLM engine...';
-                    document.getElementById('loadStatus').textContent = 'Initializing';
+                        'WebLLM engine ပြင်ဆင်နေသည်...';
 
                     // Check if WebLLM is available
                     if (typeof webllm === 'undefined') {
                         throw new Error('WebLLM not loaded');
                     }
 
-                    // Use a smaller model for GitHub Pages compatibility
-                    const model = "Phi-3-mini-4k-instruct-q4f16_1";
-                    
                     document.getElementById('modelInfo').textContent = 
-                        `Loading ${model}...`;
-                    document.getElementById('loadStatus').textContent = 'Downloading Model';
+                        `Phi-3 Mini (3.8B) ဒေါင်းလုပ်ဆွဲနေသည်...`;
 
                     this.engine = await webllm.CreateWebWorkerEngine(
-                        model,
+                        this.modelName,
                         this.initProgressCallback.bind(this)
                     );
 
                     this.isInitialized = true;
-                    this.modelLoaded = true;
                     
                     document.getElementById('modelInfo').textContent = 
-                        '✅ Phi-3 Mini loaded successfully!';
-                    document.getElementById('loadStatus').textContent = 'Ready';
+                        '✅ Phi-3 Mini ပြင်ဆင်ပြီးပါပြီ!';
                     document.getElementById('userInput').disabled = false;
                     document.getElementById('userInput').placeholder = 
-                        'Ask anything in Myanmar or English...';
+                        'မြန်မာလို (သို့) အင်္ဂလိပ်လို မေးမြန်းပါ...';
                     document.getElementById('sendBtn').disabled = false;
 
                     // Add success message
-                    addMessage('✅ Phi-3 Mini Local AI loaded! You can now chat offline.', 'bot');
+                    addMessage('✅ Phi-3 Mini Local AI ပြင်ဆင်ပြီးပါပြီ! အခု မေးခွန်းမေးနိုင်ပါပြီ။', 'bot');
 
                 } catch (error) {
-                    console.error('GitHub Pages AI init error:', error);
+                    console.error('AI init error:', error);
                     this.handleInitError(error);
                 }
             }
 
-            // Progress callback
             initProgressCallback(report) {
                 const progress = report.progress;
                 document.getElementById('modelProgress').style.width = `${progress * 100}%`;
@@ -186,40 +325,28 @@
                 if (report.text) {
                     document.getElementById('modelInfo').textContent = report.text;
                 }
-
-                // Update load status based on progress
-                if (progress < 0.3) {
-                    document.getElementById('loadStatus').textContent = 'Downloading';
-                } else if (progress < 0.8) {
-                    document.getElementById('loadStatus').textContent = 'Processing';
-                } else {
-                    document.getElementById('loadStatus').textContent = 'Finalizing';
-                }
             }
 
-            // Error handling for GitHub Pages
             handleInitError(error) {
                 document.getElementById('modelInfo').textContent = 
-                    '❌ Local AI failed. Using demo mode.';
-                document.getElementById('loadStatus').textContent = 'Demo Mode';
+                    '❌ Local AI မအောင်မြင်ပါ။ Demo mode သုံးနေသည်။';
                 document.getElementById('userInput').disabled = false;
                 document.getElementById('sendBtn').disabled = false;
                 document.getElementById('userInput').placeholder = 
-                    'Demo mode - Type your message...';
+                    'Demo mode - မေးခွန်းမေးပါ...';
 
-                addMessage('⚠️ Local AI loading failed. Using demo mode.', 'bot');
-                addMessage('You can still chat, but responses will be from demo data.', 'bot');
+                addMessage('⚠️ Local AI မအောင်မြင်ပါ။ Demo mode ဖြင့်ဆက်လက်အသုံးပြုနိုင်ပါသည်။', 'bot');
             }
 
-            // Generate response
             async generateResponse(prompt) {
                 if (!this.isInitialized) {
                     return this.getDemoResponse(prompt);
                 }
 
                 try {
-                    const systemPrompt = `You are a helpful AI assistant. Respond in a helpful and concise manner. 
-                    If the question is in Myanmar language, respond in Myanmar. Otherwise, use English.`;
+                    const systemPrompt = `သင်သည် မြန်မာစာ AI အကူဖြစ်သည်။ ကျေးဇူးပြု၍ မြန်မာလိုသာ ပြန်ဖြေပါ။ 
+                    ရာသီဥတု၊ သတင်း၊ တွက်ချက်မှု၊ သမိုင်း၊ ယဉ်ကျေးမှုစသည့် မေးခွန်းများကို ဖြေဆိုနိုင်ပါသည်။
+                    ရိုးရှင်းပြတ်သားစွာ ဖြေဆိုပါ။`;
 
                     const messages = [
                         { role: "system", content: systemPrompt },
@@ -240,28 +367,49 @@
                 }
             }
 
-            // Demo responses when local AI fails
             getDemoResponse(prompt) {
-                const demoResponses = [
-                    `I understand you asked: "${prompt}". This is a demo response since the local AI model is still loading or encountered an issue.`,
-                    `Thanks for your question about "${prompt}". I'm currently running in demo mode.`,
-                    `You asked: "${prompt}". The local Phi-3 Mini model is preparing to respond.`
-                ];
-                return demoResponses[Math.floor(Math.random() * demoResponses.length)];
+                // Smart demo responses in Myanmar
+                if (prompt.includes('မင်္ဂလာ')) {
+                    return 'မင်္ဂလာပါ! ကျွန်တော်က မြန်မာစာ AI အကူပါ။ ဘာကူညီရမလဲ?';
+                }
+                else if (prompt.includes('ရာသီဥတု')) {
+                    return '🌤️ ယခုအချိန်တွင် ရန်ကုန်မြို့၌ မိုးအနည်းငယ်ရွာနိုင်ပြီး အပူချိန် ၃၂°C ခန့်ရှိပါသည်။';
+                }
+                else if (prompt.includes('တွက်') || prompt.match(/[+\-*/]/)) {
+                    try {
+                        const expression = prompt.replace(/[^0-9+\-*/().]/g, '');
+                        if (expression) {
+                            const result = eval(expression);
+                            return `တွက်ချက်မှုရလဒ်: ${expression} = ${result}`;
+                        }
+                    } catch (e) {
+                        return 'တွက်ချက်မှုမှားယွင်းနေပါသည်။';
+                    }
+                }
+                else if (prompt.includes('သမိုင်း')) {
+                    return 'မြန်မာနိုင်ငံသည် ကြွယ်ဝသောသမိုင်းကြောင်းရှိပါသည်။ ပဒေသရာဇ်ခေတ်၊ ကိုလိုနီခေတ်၊ လွတ်လပ်ရေးခေတ်စသည်ဖြင့် ကာလအဆက်ဆက်တိုးတက်လာခဲ့ပါသည်။';
+                }
+                
+                return `ကျေးဇူးပြု၍ မေးခွန်းထပ်မေးပါ။ Local AI မှ အဖြေပေးနေဆဲဖြစ်သည်။\n\nမေးခွန်း: "${prompt}"`;
             }
         }
 
-        // Chat functionality
-        const aiAssistant = new GitHubAIAssistant();
+        // Chat Application
+        const localAI = new RealLocalAI();
         const messages = document.getElementById('messages');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
 
         // Initialize AI when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Starting Phi-3 Mini on GitHub Pages...');
-            aiAssistant.init();
+            console.log('🚀 Starting Real Local AI...');
+            localAI.init();
         });
+
+        function askQuestion(question) {
+            userInput.value = question;
+            sendMessage();
+        }
 
         async function sendMessage() {
             const message = userInput.value.trim();
@@ -272,12 +420,12 @@
             showTyping();
 
             try {
-                const response = await aiAssistant.generateResponse(message);
+                const response = await localAI.generateResponse(message);
                 hideTyping();
                 addMessage(response, 'bot');
             } catch (error) {
                 hideTyping();
-                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                addMessage('တောင်းပန်ပါတယ်၊ အမှားတစ်ခုဖြစ်သွားပါတယ်။', 'bot');
             }
         }
 
@@ -289,11 +437,11 @@
             bubble.className = 'bubble';
             
             if (sender === 'bot') {
-                const status = aiAssistant.modelLoaded ? '🧠 Phi-3 Mini' : '🔧 Demo Mode';
+                const status = localAI.isInitialized ? '🧠 Phi-3 Mini' : '🔧 Demo Mode';
                 bubble.innerHTML = `
                     ${text}
                     <div class="model-indicator">
-                        ${status} • 🇲🇲 Myanmar
+                        ${status} • 🇲🇲 မြန်မာ
                     </div>
                 `;
             } else {
@@ -332,9 +480,7 @@
             if (e.key === 'Enter') sendMessage();
         });
 
-        // GitHub Pages specific logging
-        console.log('📍 GitHub Pages - Phi-3 Branch');
-        console.log('🤖 Local AI Assistant Initializing...');
+        console.log('🚀 Real Local AI Assistant with Phi-3 Mini loaded!');
     </script>
 </body>
-</html>
+    </html>
