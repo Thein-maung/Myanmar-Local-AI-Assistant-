@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>မြန်မာစာ AI - Phi-3 Mini (GitHub Pages)</title>
+    <!-- WebLLM CDN with fallback -->
+    <script src="https://unpkg.com/@mlc-ai/web-llm@0.2.38"></script>
+    <style>
+        /* Your existing Glass UI styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Pyidaungsu', 'Myanmar3', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .github-notice {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 700px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+
+        /* ... rest of your styles ... */
+        
+        .model-loading {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <!-- GitHub Notice -->
+    <div class="github-notice">
+        <strong>🚀 GitHub Pages - Phi-3 Mini Branch</strong>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <div class="header">
+            <div class="current-mode" id="currentMode">🧠 Phi-3 Mini • 🇲🇲 မြန်မာ</div>
+            <h1>🤖 Phi-3 Mini Local AI</h1>
+            <p>GitHub Pages Version • Real Local AI</p>
+        </div>
+        
+        <div class="messages" id="messages">
+            <div class="message bot-message">
+                <div class="bubble">
+                    <strong>မင်္ဂလာပါ! 👋</strong><br>
+                    <span>Phi-3 Mini Local AI Model ကို GitHub Pages မှာ တင်ထားပါတယ်။</span>
+                    
+                    <div class="model-loading">
+                        <strong>🔄 Loading Phi-3 Mini (3.8B)...</strong>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="modelProgress"></div>
+                        </div>
+                        <div id="modelInfo" style="font-size: 0.8em; margin-top: 10px;">
+                            Initializing WebLLM engine...
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <strong>GitHub Pages Info:</strong>
+                        <div style="font-size: 0.8em; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; margin-top: 8px;">
+                            • Branch: phi-3<br>
+                            • Model: Phi-3-mini-4k-instruct<br>
+                            • Size: ~2.3GB (auto-download)<br>
+                            • Status: <span id="loadStatus">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Model loading, please wait..." disabled autocomplete="off">
+            <button id="sendBtn" disabled>➤</button>
+        </div>
+    </div>
+
+    <script>
+        // GitHub Pages Compatible Local AI
+        class GitHubAIAssistant {
+            constructor() {
+                this.engine = null;
+                this.isInitialized = false;
+                this.modelLoaded = false;
+            }
+
+            // Initialize with error handling for GitHub Pages
+            async init() {
+                try {
+                    document.getElementById('modelInfo').textContent = 
+                        'Creating WebLLM engine...';
+                    document.getElementById('loadStatus').textContent = 'Initializing';
+
+                    // Check if WebLLM is available
+                    if (typeof webllm === 'undefined') {
+                        throw new Error('WebLLM not loaded');
+                    }
+
+                    // Use a smaller model for GitHub Pages compatibility
+                    const model = "Phi-3-mini-4k-instruct-q4f16_1";
+                    
+                    document.getElementById('modelInfo').textContent = 
+                        `Loading ${model}...`;
+                    document.getElementById('loadStatus').textContent = 'Downloading Model';
+
+                    this.engine = await webllm.CreateWebWorkerEngine(
+                        model,
+                        this.initProgressCallback.bind(this)
+                    );
+
+                    this.isInitialized = true;
+                    this.modelLoaded = true;
+                    
+                    document.getElementById('modelInfo').textContent = 
+                        '✅ Phi-3 Mini loaded successfully!';
+                    document.getElementById('loadStatus').textContent = 'Ready';
+                    document.getElementById('userInput').disabled = false;
+                    document.getElementById('userInput').placeholder = 
+                        'Ask anything in Myanmar or English...';
+                    document.getElementById('sendBtn').disabled = false;
+
+                    // Add success message
+                    addMessage('✅ Phi-3 Mini Local AI loaded! You can now chat offline.', 'bot');
+
+                } catch (error) {
+                    console.error('GitHub Pages AI init error:', error);
+                    this.handleInitError(error);
+                }
+            }
+
+            // Progress callback
+            initProgressCallback(report) {
+                const progress = report.progress;
+                document.getElementById('modelProgress').style.width = `${progress * 100}%`;
+                
+                if (report.text) {
+                    document.getElementById('modelInfo').textContent = report.text;
+                }
+
+                // Update load status based on progress
+                if (progress < 0.3) {
+                    document.getElementById('loadStatus').textContent = 'Downloading';
+                } else if (progress < 0.8) {
+                    document.getElementById('loadStatus').textContent = 'Processing';
+                } else {
+                    document.getElementById('loadStatus').textContent = 'Finalizing';
+                }
+            }
+
+            // Error handling for GitHub Pages
+            handleInitError(error) {
+                document.getElementById('modelInfo').textContent = 
+                    '❌ Local AI failed. Using demo mode.';
+                document.getElementById('loadStatus').textContent = 'Demo Mode';
+                document.getElementById('userInput').disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+                document.getElementById('userInput').placeholder = 
+                    'Demo mode - Type your message...';
+
+                addMessage('⚠️ Local AI loading failed. Using demo mode.', 'bot');
+                addMessage('You can still chat, but responses will be from demo data.', 'bot');
+            }
+
+            // Generate response
+            async generateResponse(prompt) {
+                if (!this.isInitialized) {
+                    return this.getDemoResponse(prompt);
+                }
+
+                try {
+                    const systemPrompt = `You are a helpful AI assistant. Respond in a helpful and concise manner. 
+                    If the question is in Myanmar language, respond in Myanmar. Otherwise, use English.`;
+
+                    const messages = [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: prompt }
+                    ];
+
+                    const completion = await this.engine.chat.completions.create({
+                        messages: messages,
+                        temperature: 0.7,
+                        max_tokens: 500
+                    });
+
+                    return completion.choices[0].message.content;
+
+                } catch (error) {
+                    console.error('Generation error:', error);
+                    return this.getDemoResponse(prompt);
+                }
+            }
+
+            // Demo responses when local AI fails
+            getDemoResponse(prompt) {
+                const demoResponses = [
+                    `I understand you asked: "${prompt}". This is a demo response since the local AI model is still loading or encountered an issue.`,
+                    `Thanks for your question about "${prompt}". I'm currently running in demo mode.`,
+                    `You asked: "${prompt}". The local Phi-3 Mini model is preparing to respond.`
+                ];
+                return demoResponses[Math.floor(Math.random() * demoResponses.length)];
+            }
+        }
+
+        // Chat functionality
+        const aiAssistant = new GitHubAIAssistant();
+        const messages = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Initialize AI when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Starting Phi-3 Mini on GitHub Pages...');
+            aiAssistant.init();
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+            showTyping();
+
+            try {
+                const response = await aiAssistant.generateResponse(message);
+                hideTyping();
+                addMessage(response, 'bot');
+            } catch (error) {
+                hideTyping();
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            if (sender === 'bot') {
+                const status = aiAssistant.modelLoaded ? '🧠 Phi-3 Mini' : '🔧 Demo Mode';
+                bubble.innerHTML = `
+                    ${text}
+                    <div class="model-indicator">
+                        ${status} • 🇲🇲 Myanmar
+                    </div>
+                `;
+            } else {
+                bubble.textContent = text;
+            }
+            
+            messageDiv.appendChild(bubble);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showTyping() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            messageDiv.id = 'typingIndicator';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble typing';
+            bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            
+            messageDiv.appendChild(bubble);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // GitHub Pages specific logging
+        console.log('📍 GitHub Pages - Phi-3 Branch');
+        console.log('🤖 Local AI Assistant Initializing...');
+    </script>
+</body>
+</html>
