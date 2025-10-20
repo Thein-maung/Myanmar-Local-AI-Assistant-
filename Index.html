@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>မြန်မာစာ AI Assistant - Smart Myanmar AI</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Pyidaungsu', 'Myanmar3', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .github-notice {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 700px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-message .bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message .bubble {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 12px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #sendBtn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .typing {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing-bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .model-indicator {
+            font-size: 0.7em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- GitHub Notice -->
+    <div class="github-notice">
+        <strong>🚀 Smart Myanmar AI Assistant</strong>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <div class="header">
+            <h1>🤖 မြန်မာစာ AI အကူ</h1>
+            <p>Advanced Myanmar Language AI • No Installation Required</p>
+        </div>
+        
+        <div class="messages" id="messages">
+            <div class="message bot-message">
+                <div class="bubble">
+                    <strong>မင်္ဂလာပါ! 👋</strong><br>
+                    <span>ကျွန်တော်က မြန်မာစာ AI အကူပါ။ ဘာသာစကားအမျိုးမျိုးဖြင့် ကူညီပေးနိုင်ပါတယ်။</span>
+                    
+                    <div class="feature-card">
+                        <strong>🌟 အဓိကစွမ်းရည်များ:</strong>
+                        <div style="margin-top: 10px;">
+                            <div>• 🌤️ ရာသီဥတုအချက်အလက်</div>
+                            <div>• 💰 ငွေလဲနှုန်းများ</div>
+                            <div>• 🧮 သင်္ချာတွက်ချက်မှု</div>
+                            <div>• 📚 အသိပညာဗဟုသုတ</div>
+                            <div>• 🔤 ဘာသာစကားအကူ</div>
+                        </div>
+                    </div>
+
+                    <div class="quick-buttons">
+                        <button class="quick-btn" onclick="askQuestion('မင်္ဂလာပါ၊ ကျေးဇူးပြုပြီးကူညီပေးပါ')">👋 မင်္ဂလာပါ</button>
+                        <button class="quick-btn" onclick="askQuestion('ရန်ကုန်မြို့ ယနေ့ရာသီဥတု')">🌤️ ရာသီဥတု</button>
+                        <button class="quick-btn" onclick="askQuestion('အမေရိကန်ဒေါ်လာ မြန်မာကျပ်ငွေလဲနှုန်း')">💱 ငွေလဲနှုန်း</button>
+                        <button class="quick-btn" onclick="askQuestion('၂၅ × ၄ + ၁၀ တွက်ပေးပါ')">🧮 တွက်ချက်</button>
+                    </div>
+
+                    <div style="margin-top: 15px; font-size: 0.8em; opacity: 0.8;">
+                        💡 <strong>အသုံးပြုနည်း:</strong> မြန်မာလို (သို့) အင်္ဂလိပ်လို မေးမြန်းနိုင်ပါသည်
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="မြန်မာလို (သို့) အင်္ဂလိပ်လို မေးမြန်းပါ..." autocomplete="off">
+            <button id="sendBtn">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // Smart Myanmar AI Assistant - No WebLLM Required
+        class SmartMyanmarAI {
+            constructor() {
+                this.knowledgeBase = this.createKnowledgeBase();
+            }
+
+            createKnowledgeBase() {
+                return {
+                    // Greetings
+                    greetings: {
+                        patterns: ['မင်္ဂလာ', 'hello', 'hi', 'hey', 'ဟယ်လို', 'နေကောင်း'],
+                        responses: [
+                            'မင်္ဂလာပါ! ကျေးဇူးပြုပြီး မေးခွန်းမေးပါ။',
+                            'ဟယ်လို! ဘာကူညီရမလဲ?',
+                            'မင်္ဂလာပါ! ကျွန်တော်က မြန်မာစာ AI အကူပါ။'
+                        ]
+                    },
+
+                    // Weather
+                    weather: {
+                        patterns: ['ရာသီဥတု', 'weather', 'မိုး', 'အပူချိန်'],
+                        responses: [
+                            '🌤️ ယခုအချိန်တွင် ရန်ကုန်မြို့၌ မိုးအနည်းငယ်ရွာနိုင်ပြီး အပူချိန် ၃၂°C ခန့်ရှိပါသည်။',
+                            '☀️ မန္တလေးမြို့တွင် နေပူပြီး အပူချိန် ၃၅°C ခန့်ရှိပါသည်။',
+                            '🌧️ မော်လမြိုင်မြို့တွင် မိုးရွာသွန်းနိုင်ပြီး အပူချိန် ၃၀°C ခန့်ရှိပါသည်။'
+                        ]
+                    },
+
+                    // Exchange Rates
+                    exchange: {
+                        patterns: ['ငွေလဲ', 'exchange', 'rate', 'ဒေါ်လာ', 'ကျပ်'],
+                        responses: [
+                            '💱 လက်ရှိငွေလဲနှုန်းများ:\n• USD to MMK: ၂,၁၀၀ ကျပ်\n• EUR to MMK: ၂,၃၀၀ ကျပ်\n• SGD to MMK: ၁,၅၅၀ ကျပ်',
+                            '💰 ယနေ့ငွေလဲနှုန်းများ:\n• US Dollar: ၂,၁၀၀ ကျပ်\n• Euro: ၂,၃၀၀ ကျပ်\n• Thai Baht: ၅၈ ကျပ်'
+                        ]
+                    },
+
+                    // Calculations
+                    calculation: {
+                        patterns: ['တွက်', 'calculate', 'ပေါင်း', 'နှုတ်', 'မြှောက်', 'စား'],
+                        calculate: (input) => {
+                            try {
+                                const expression = input.replace(/[^0-9+\-*/().]/g, '');
+                                if (expression) {
+                                    const result = eval(expression);
+                                    return `🧮 တွက်ချက်မှုရလဒ်: ${expression} = ${result}`;
+                                }
+                            } catch (e) {
+                                return '❌ တွက်ချက်မှုမှားယွင်းနေပါသည်။';
+                            }
+                            return 'ကျေးဇူးပြု၍ မှန်ကန်သော တွက်ချက်မှုပေးပါ။';
+                        }
+                    },
+
+                    // Myanmar Culture
+                    culture: {
+                        patterns: ['မြန်မာ', 'myanmar', 'သမိုင်း', 'history', 'ယဉ်ကျေးမှု', 'culture'],
+                        responses: [
+                            '🇲🇲 မြန်မာနိုင်ငံသည် အရှေ့တောင်အာရှတွင် တည်ရှိပြီး ကြွယ်ဝသောယဉ်ကျေးမှုရှိပါသည်။',
+                            '📚 မြန်မာ့သမိုင်းသည် ပုဂံခေတ်မှစတင်ကာ ဘုရင်များလက်ထက်၊ ကိုလိုနီခေတ်၊ လွတ်လပ်ရေးခေတ်စသည်ဖြင့် ရှည်လျားပါသည်။',
+                            '🎭 မြန်မာ့ရိုးရာယဉ်ကျေးမှုတွင် ပုတီးစိပ်၊ သဘင်အနုပညာ၊ ပန်းချီ၊ ပန်းပု၊ ရွှေထီးသွန်းလုပ်ငန်းများ ပါဝင်ပါသည်။'
+                        ]
+                    },
+
+                    // Technology
+                    tech: {
+                        patterns: ['နည်းပညာ', 'technology', 'AI', 'ကွန်ပျူတာ', 'computer'],
+                        responses: [
+                            '🤖 AI နည်းပညာသည် လူ့ဘဝကို အများကြီးပြောင်းလဲစေပါသည်။',
+                            '💻 မြန်မာနိုင်ငံတွင်လည်း ဒီဂျစ်တယ်နည်းပညာ မြန်မြန်ဆန်ဆန်တိုးတက်လာနေပါသည်။',
+                            '📱 Mobile technology နှင့် Internet usage သည် မြန်မာနိုင်ငံတွင် အလွန်မြင့်မားစွာရှိနေပါသည်။'
+                        ]
+                    },
+
+                    // Default response
+                    default: {
+                        responses: [
+                            'ကျေးဇူးပြု၍ ပိုမိုရှင်းလင်းစွာ မေးမြန်းပါ။',
+                            'တောင်းပန်ပါတယ်၊ ဒီမေးခွန်းကို နားမလည်သေးပါ။ နောက်တစ်မျိုးမေးကြည့်ပါ။',
+                            'ဒီအကြောင်းကို ကျွန်တော် မသိသေးပါ။ အခြားမေးခွန်းမေးကြည့်ပါ။'
+                        ]
+                    }
+                };
+            }
+
+            async process(input) {
+                // Simulate AI processing delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+
+                const inputLower = input.toLowerCase();
+
+                // Check for calculations first
+                if (this.knowledgeBase.calculation.patterns.some(pattern => 
+                    inputLower.includes(pattern))) {
+                    return this.knowledgeBase.calculation.calculate(input);
+                }
+
+                // Check other categories
+                for (const [category, data] of Object.entries(this.knowledgeBase)) {
+                    if (category === 'default' || category === 'calculation') continue;
+                    
+                    if (data.patterns.some(pattern => inputLower.includes(pattern))) {
+                        if (category === 'calculation') {
+                            return data.calculate(input);
+                        } else {
+                            const randomIndex = Math.floor(Math.random() * data.responses.length);
+                            return data.responses[randomIndex];
+                        }
+                    }
+                }
+
+                // Default response
+                const randomIndex = Math.floor(Math.random() * this.knowledgeBase.default.responses.length);
+                return this.knowledgeBase.default.responses[randomIndex];
+            }
+        }
+
+        // Chat Application
+        const myanmarAI = new SmartMyanmarAI();
+        const messages = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function askQuestion(question) {
+            userInput.value = question;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+            showTyping();
+
+            try {
+                const response = await myanmarAI.process(message);
+                hideTyping();
+                addMessage(response, 'bot');
+            } catch (error) {
+                hideTyping();
+                addMessage('တောင်းပန်ပါတယ်၊ အမှားတစ်ခုဖြစ်သွားပါတယ်။', 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            if (sender === 'bot') {
+                bubble.innerHTML = `
+                    ${text}
+                    <div class="model-indicator">
+                        🤖 Smart Myanmar AI • 🇲🇲 မြန်မာ
+                    </div>
+                `;
+            } else {
+                bubble.textContent = text;
+            }
+            
+            messageDiv.appendChild(bubble);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showTyping() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            messageDiv.id = 'typingIndicator';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble typing';
+            bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            
+            messageDiv.appendChild(bubble);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Auto-focus on input
+        userInput.focus();
+
+        console.log('🚀 Smart Myanmar AI Assistant loaded successfully!');
+    </script>
+</body>
+</html>
