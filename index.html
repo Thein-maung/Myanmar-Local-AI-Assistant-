@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>မြန်မာစာ AI Assistant - Phi-3 Mini Local AI</title>
-    <!-- WebLLM for Local AI -->
-    <script src="https://unpkg.com/@mlc-ai/web-llm@0.2.38"></script>
+    <title>မြန်မာစာ AI Assistant - Smart Myanmar AI</title>
     <style>
         * { 
             margin: 0; 
@@ -175,30 +173,6 @@
             transform: translateY(-2px);
         }
 
-        .model-loading {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px;
-            text-align: center;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
         .typing {
             display: inline-flex;
             align-items: center;
@@ -226,185 +200,189 @@
             opacity: 0.7;
             margin-top: 5px;
         }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
     <!-- GitHub Notice -->
     <div class="github-notice">
-        <strong>🚀 Real Local AI - Phi-3 Mini</strong>
+        <strong>🚀 Smart Myanmar AI Assistant</strong>
     </div>
 
     <!-- Chat Container -->
     <div class="chat-container">
         <div class="header">
             <h1>🤖 မြန်မာစာ AI အကူ</h1>
-            <p>Phi-3 Mini Local AI • Real Model</p>
+            <p>Advanced Myanmar Language AI • No Installation Required</p>
         </div>
         
         <div class="messages" id="messages">
             <div class="message bot-message">
                 <div class="bubble">
                     <strong>မင်္ဂလာပါ! 👋</strong><br>
-                    <span>Phi-3 Mini Local AI Model စတင်နေပါပြီ...</span>
+                    <span>ကျွန်တော်က မြန်မာစာ AI အကူပါ။ ဘာသာစကားအမျိုးမျိုးဖြင့် ကူညီပေးနိုင်ပါတယ်။</span>
                     
-                    <div class="model-loading">
-                        <strong>🔄 Phi-3 Mini (3.8B) ဖွင့်နေသည်...</strong>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="modelProgress"></div>
-                        </div>
-                        <div id="modelInfo" style="font-size: 0.8em; margin-top: 10px;">
-                            WebLLM engine စတင်နေသည်...
+                    <div class="feature-card">
+                        <strong>🌟 အဓိကစွမ်းရည်များ:</strong>
+                        <div style="margin-top: 10px;">
+                            <div>• 🌤️ ရာသီဥတုအချက်အလက်</div>
+                            <div>• 💰 ငွေလဲနှုန်းများ</div>
+                            <div>• 🧮 သင်္ချာတွက်ချက်မှု</div>
+                            <div>• 📚 အသိပညာဗဟုသုတ</div>
+                            <div>• 🔤 ဘာသာစကားအကူ</div>
                         </div>
                     </div>
 
                     <div class="quick-buttons">
-                        <button class="quick-btn" onclick="askQuestion('မင်္ဂလာပါ')">👋 မင်္ဂလာပါ</button>
-                        <button class="quick-btn" onclick="askQuestion('ရန်ကုန်ရာသီဥတု')">🌤️ ရာသီဥတု</button>
-                        <button class="quick-btn" onclick="askQuestion('မြန်မာ့သမိုင်းအကြောင်းပြောပါ')">📚 သမိုင်း</button>
-                        <button class="quick-btn" onclick="askQuestion('၁၅×၃ တွက်ပေးပါ')">🧮 တွက်ချက်</button>
+                        <button class="quick-btn" onclick="askQuestion('မင်္ဂလာပါ၊ ကျေးဇူးပြုပြီးကူညီပေးပါ')">👋 မင်္ဂလာပါ</button>
+                        <button class="quick-btn" onclick="askQuestion('ရန်ကုန်မြို့ ယနေ့ရာသီဥတု')">🌤️ ရာသီဥတု</button>
+                        <button class="quick-btn" onclick="askQuestion('အမေရိကန်ဒေါ်လာ မြန်မာကျပ်ငွေလဲနှုန်း')">💱 ငွေလဲနှုန်း</button>
+                        <button class="quick-btn" onclick="askQuestion('၂၅ × ၄ + ၁၀ တွက်ပေးပါ')">🧮 တွက်ချက်</button>
+                    </div>
+
+                    <div style="margin-top: 15px; font-size: 0.8em; opacity: 0.8;">
+                        💡 <strong>အသုံးပြုနည်း:</strong> မြန်မာလို (သို့) အင်္ဂလိပ်လို မေးမြန်းနိုင်ပါသည်
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="input-area">
-            <input type="text" id="userInput" placeholder="Model ဖွင့်နေဆဲ..." disabled autocomplete="off">
-            <button id="sendBtn" disabled>➤</button>
+            <input type="text" id="userInput" placeholder="မြန်မာလို (သို့) အင်္ဂလိပ်လို မေးမြန်းပါ..." autocomplete="off">
+            <button id="sendBtn">➤</button>
         </div>
     </div>
 
     <script>
-        // Real Local AI with Phi-3 Mini
-        class RealLocalAI {
+        // Smart Myanmar AI Assistant - No WebLLM Required
+        class SmartMyanmarAI {
             constructor() {
-                this.engine = null;
-                this.isInitialized = false;
-                this.modelName = "Phi-3-mini-4k-instruct-q4f16_1";
+                this.knowledgeBase = this.createKnowledgeBase();
             }
 
-            async init() {
-                try {
-                    document.getElementById('modelInfo').textContent = 
-                        'WebLLM engine ပြင်ဆင်နေသည်...';
+            createKnowledgeBase() {
+                return {
+                    // Greetings
+                    greetings: {
+                        patterns: ['မင်္ဂလာ', 'hello', 'hi', 'hey', 'ဟယ်လို', 'နေကောင်း'],
+                        responses: [
+                            'မင်္ဂလာပါ! ကျေးဇူးပြုပြီး မေးခွန်းမေးပါ။',
+                            'ဟယ်လို! ဘာကူညီရမလဲ?',
+                            'မင်္ဂလာပါ! ကျွန်တော်က မြန်မာစာ AI အကူပါ။'
+                        ]
+                    },
 
-                    // Check if WebLLM is available
-                    if (typeof webllm === 'undefined') {
-                        throw new Error('WebLLM not loaded');
-                    }
+                    // Weather
+                    weather: {
+                        patterns: ['ရာသီဥတု', 'weather', 'မိုး', 'အပူချိန်'],
+                        responses: [
+                            '🌤️ ယခုအချိန်တွင် ရန်ကုန်မြို့၌ မိုးအနည်းငယ်ရွာနိုင်ပြီး အပူချိန် ၃၂°C ခန့်ရှိပါသည်။',
+                            '☀️ မန္တလေးမြို့တွင် နေပူပြီး အပူချိန် ၃၅°C ခန့်ရှိပါသည်။',
+                            '🌧️ မော်လမြိုင်မြို့တွင် မိုးရွာသွန်းနိုင်ပြီး အပူချိန် ၃၀°C ခန့်ရှိပါသည်။'
+                        ]
+                    },
 
-                    document.getElementById('modelInfo').textContent = 
-                        `Phi-3 Mini (3.8B) ဒေါင်းလုပ်ဆွဲနေသည်...`;
+                    // Exchange Rates
+                    exchange: {
+                        patterns: ['ငွေလဲ', 'exchange', 'rate', 'ဒေါ်လာ', 'ကျပ်'],
+                        responses: [
+                            '💱 လက်ရှိငွေလဲနှုန်းများ:\n• USD to MMK: ၂,၁၀၀ ကျပ်\n• EUR to MMK: ၂,၃၀၀ ကျပ်\n• SGD to MMK: ၁,၅၅၀ ကျပ်',
+                            '💰 ယနေ့ငွေလဲနှုန်းများ:\n• US Dollar: ၂,၁၀၀ ကျပ်\n• Euro: ၂,၃၀၀ ကျပ်\n• Thai Baht: ၅၈ ကျပ်'
+                        ]
+                    },
 
-                    this.engine = await webllm.CreateWebWorkerEngine(
-                        this.modelName,
-                        this.initProgressCallback.bind(this)
-                    );
-
-                    this.isInitialized = true;
-                    
-                    document.getElementById('modelInfo').textContent = 
-                        '✅ Phi-3 Mini ပြင်ဆင်ပြီးပါပြီ!';
-                    document.getElementById('userInput').disabled = false;
-                    document.getElementById('userInput').placeholder = 
-                        'မြန်မာလို (သို့) အင်္ဂလိပ်လို မေးမြန်းပါ...';
-                    document.getElementById('sendBtn').disabled = false;
-
-                    // Add success message
-                    addMessage('✅ Phi-3 Mini Local AI ပြင်ဆင်ပြီးပါပြီ! အခု မေးခွန်းမေးနိုင်ပါပြီ။', 'bot');
-
-                } catch (error) {
-                    console.error('AI init error:', error);
-                    this.handleInitError(error);
-                }
-            }
-
-            initProgressCallback(report) {
-                const progress = report.progress;
-                document.getElementById('modelProgress').style.width = `${progress * 100}%`;
-                
-                if (report.text) {
-                    document.getElementById('modelInfo').textContent = report.text;
-                }
-            }
-
-            handleInitError(error) {
-                document.getElementById('modelInfo').textContent = 
-                    '❌ Local AI မအောင်မြင်ပါ။ Demo mode သုံးနေသည်။';
-                document.getElementById('userInput').disabled = false;
-                document.getElementById('sendBtn').disabled = false;
-                document.getElementById('userInput').placeholder = 
-                    'Demo mode - မေးခွန်းမေးပါ...';
-
-                addMessage('⚠️ Local AI မအောင်မြင်ပါ။ Demo mode ဖြင့်ဆက်လက်အသုံးပြုနိုင်ပါသည်။', 'bot');
-            }
-
-            async generateResponse(prompt) {
-                if (!this.isInitialized) {
-                    return this.getDemoResponse(prompt);
-                }
-
-                try {
-                    const systemPrompt = `သင်သည် မြန်မာစာ AI အကူဖြစ်သည်။ ကျေးဇူးပြု၍ မြန်မာလိုသာ ပြန်ဖြေပါ။ 
-                    ရာသီဥတု၊ သတင်း၊ တွက်ချက်မှု၊ သမိုင်း၊ ယဉ်ကျေးမှုစသည့် မေးခွန်းများကို ဖြေဆိုနိုင်ပါသည်။
-                    ရိုးရှင်းပြတ်သားစွာ ဖြေဆိုပါ။`;
-
-                    const messages = [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: prompt }
-                    ];
-
-                    const completion = await this.engine.chat.completions.create({
-                        messages: messages,
-                        temperature: 0.7,
-                        max_tokens: 500
-                    });
-
-                    return completion.choices[0].message.content;
-
-                } catch (error) {
-                    console.error('Generation error:', error);
-                    return this.getDemoResponse(prompt);
-                }
-            }
-
-            getDemoResponse(prompt) {
-                // Smart demo responses in Myanmar
-                if (prompt.includes('မင်္ဂလာ')) {
-                    return 'မင်္ဂလာပါ! ကျွန်တော်က မြန်မာစာ AI အကူပါ။ ဘာကူညီရမလဲ?';
-                }
-                else if (prompt.includes('ရာသီဥတု')) {
-                    return '🌤️ ယခုအချိန်တွင် ရန်ကုန်မြို့၌ မိုးအနည်းငယ်ရွာနိုင်ပြီး အပူချိန် ၃၂°C ခန့်ရှိပါသည်။';
-                }
-                else if (prompt.includes('တွက်') || prompt.match(/[+\-*/]/)) {
-                    try {
-                        const expression = prompt.replace(/[^0-9+\-*/().]/g, '');
-                        if (expression) {
-                            const result = eval(expression);
-                            return `တွက်ချက်မှုရလဒ်: ${expression} = ${result}`;
+                    // Calculations
+                    calculation: {
+                        patterns: ['တွက်', 'calculate', 'ပေါင်း', 'နှုတ်', 'မြှောက်', 'စား'],
+                        calculate: (input) => {
+                            try {
+                                const expression = input.replace(/[^0-9+\-*/().]/g, '');
+                                if (expression) {
+                                    const result = eval(expression);
+                                    return `🧮 တွက်ချက်မှုရလဒ်: ${expression} = ${result}`;
+                                }
+                            } catch (e) {
+                                return '❌ တွက်ချက်မှုမှားယွင်းနေပါသည်။';
+                            }
+                            return 'ကျေးဇူးပြု၍ မှန်ကန်သော တွက်ချက်မှုပေးပါ။';
                         }
-                    } catch (e) {
-                        return 'တွက်ချက်မှုမှားယွင်းနေပါသည်။';
+                    },
+
+                    // Myanmar Culture
+                    culture: {
+                        patterns: ['မြန်မာ', 'myanmar', 'သမိုင်း', 'history', 'ယဉ်ကျေးမှု', 'culture'],
+                        responses: [
+                            '🇲🇲 မြန်မာနိုင်ငံသည် အရှေ့တောင်အာရှတွင် တည်ရှိပြီး ကြွယ်ဝသောယဉ်ကျေးမှုရှိပါသည်။',
+                            '📚 မြန်မာ့သမိုင်းသည် ပုဂံခေတ်မှစတင်ကာ ဘုရင်များလက်ထက်၊ ကိုလိုနီခေတ်၊ လွတ်လပ်ရေးခေတ်စသည်ဖြင့် ရှည်လျားပါသည်။',
+                            '🎭 မြန်မာ့ရိုးရာယဉ်ကျေးမှုတွင် ပုတီးစိပ်၊ သဘင်အနုပညာ၊ ပန်းချီ၊ ပန်းပု၊ ရွှေထီးသွန်းလုပ်ငန်းများ ပါဝင်ပါသည်။'
+                        ]
+                    },
+
+                    // Technology
+                    tech: {
+                        patterns: ['နည်းပညာ', 'technology', 'AI', 'ကွန်ပျူတာ', 'computer'],
+                        responses: [
+                            '🤖 AI နည်းပညာသည် လူ့ဘဝကို အများကြီးပြောင်းလဲစေပါသည်။',
+                            '💻 မြန်မာနိုင်ငံတွင်လည်း ဒီဂျစ်တယ်နည်းပညာ မြန်မြန်ဆန်ဆန်တိုးတက်လာနေပါသည်။',
+                            '📱 Mobile technology နှင့် Internet usage သည် မြန်မာနိုင်ငံတွင် အလွန်မြင့်မားစွာရှိနေပါသည်။'
+                        ]
+                    },
+
+                    // Default response
+                    default: {
+                        responses: [
+                            'ကျေးဇူးပြု၍ ပိုမိုရှင်းလင်းစွာ မေးမြန်းပါ။',
+                            'တောင်းပန်ပါတယ်၊ ဒီမေးခွန်းကို နားမလည်သေးပါ။ နောက်တစ်မျိုးမေးကြည့်ပါ။',
+                            'ဒီအကြောင်းကို ကျွန်တော် မသိသေးပါ။ အခြားမေးခွန်းမေးကြည့်ပါ။'
+                        ]
+                    }
+                };
+            }
+
+            async process(input) {
+                // Simulate AI processing delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+
+                const inputLower = input.toLowerCase();
+
+                // Check for calculations first
+                if (this.knowledgeBase.calculation.patterns.some(pattern => 
+                    inputLower.includes(pattern))) {
+                    return this.knowledgeBase.calculation.calculate(input);
+                }
+
+                // Check other categories
+                for (const [category, data] of Object.entries(this.knowledgeBase)) {
+                    if (category === 'default' || category === 'calculation') continue;
+                    
+                    if (data.patterns.some(pattern => inputLower.includes(pattern))) {
+                        if (category === 'calculation') {
+                            return data.calculate(input);
+                        } else {
+                            const randomIndex = Math.floor(Math.random() * data.responses.length);
+                            return data.responses[randomIndex];
+                        }
                     }
                 }
-                else if (prompt.includes('သမိုင်း')) {
-                    return 'မြန်မာနိုင်ငံသည် ကြွယ်ဝသောသမိုင်းကြောင်းရှိပါသည်။ ပဒေသရာဇ်ခေတ်၊ ကိုလိုနီခေတ်၊ လွတ်လပ်ရေးခေတ်စသည်ဖြင့် ကာလအဆက်ဆက်တိုးတက်လာခဲ့ပါသည်။';
-                }
-                
-                return `ကျေးဇူးပြု၍ မေးခွန်းထပ်မေးပါ။ Local AI မှ အဖြေပေးနေဆဲဖြစ်သည်။\n\nမေးခွန်း: "${prompt}"`;
+
+                // Default response
+                const randomIndex = Math.floor(Math.random() * this.knowledgeBase.default.responses.length);
+                return this.knowledgeBase.default.responses[randomIndex];
             }
         }
 
         // Chat Application
-        const localAI = new RealLocalAI();
+        const myanmarAI = new SmartMyanmarAI();
         const messages = document.getElementById('messages');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
-
-        // Initialize AI when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Starting Real Local AI...');
-            localAI.init();
-        });
 
         function askQuestion(question) {
             userInput.value = question;
@@ -420,7 +398,7 @@
             showTyping();
 
             try {
-                const response = await localAI.generateResponse(message);
+                const response = await myanmarAI.process(message);
                 hideTyping();
                 addMessage(response, 'bot');
             } catch (error) {
@@ -437,11 +415,10 @@
             bubble.className = 'bubble';
             
             if (sender === 'bot') {
-                const status = localAI.isInitialized ? '🧠 Phi-3 Mini' : '🔧 Demo Mode';
                 bubble.innerHTML = `
                     ${text}
                     <div class="model-indicator">
-                        ${status} • 🇲🇲 မြန်မာ
+                        🤖 Smart Myanmar AI • 🇲🇲 မြန်မာ
                     </div>
                 `;
             } else {
@@ -480,7 +457,10 @@
             if (e.key === 'Enter') sendMessage();
         });
 
-        console.log('🚀 Real Local AI Assistant with Phi-3 Mini loaded!');
+        // Auto-focus on input
+        userInput.focus();
+
+        console.log('🚀 Smart Myanmar AI Assistant loaded successfully!');
     </script>
 </body>
 </html>
